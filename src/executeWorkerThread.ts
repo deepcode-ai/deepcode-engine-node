@@ -32,9 +32,9 @@ const messageHandler = async (m: unknown) => {
 
 		try {
 			const fileCommands =
-				message.codemodEngine === 'jscodeshift'
+				message.deepcodeEngine === 'jscodeshift'
 					? runJscodeshiftDeepcode(
-							message.codemodSource,
+							message.deepcodeSource,
 							message.path,
 							message.data,
 							message.formatWithPrettier,
@@ -42,7 +42,7 @@ const messageHandler = async (m: unknown) => {
 							consoleCallback,
 					  )
 					: runTsMorphDeepcode(
-							message.codemodSource,
+							message.deepcodeSource,
 							message.path,
 							message.data,
 							message.formatWithPrettier,

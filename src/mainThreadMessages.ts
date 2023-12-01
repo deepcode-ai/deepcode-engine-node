@@ -7,9 +7,9 @@ const mainThreadMessageSchema = S.union(
 	}),
 	S.struct({
 		kind: S.literal('runDeepcode'),
-		codemodPath: S.string,
-		codemodSource: S.string,
-		codemodEngine: S.union(
+		deepcodePath: S.string,
+		deepcodeSource: S.string,
+		deepcodeEngine: S.union(
 			S.literal('jscodeshift'),
 			S.literal('repomod-engine'),
 			S.literal('filemod'),

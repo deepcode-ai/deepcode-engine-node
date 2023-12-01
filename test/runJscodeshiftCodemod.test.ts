@@ -3,10 +3,10 @@ import { transpile } from '../src/getTransformer.js';
 import { runJscodeshiftDeepcode } from '../src/runJscodeshiftDeepcode.js';
 import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 
-const codemodSource = transpile(`
+const deepcodeSource = transpile(`
 import type { FileInfo, API, Options } from 'jscodeshift';
 
-// this is the entry point for a JSCodeshift codemod
+// this is the entry point for a JSCodeshift deepcode
 export default function transform(
     file: FileInfo,
     api: API,
@@ -62,7 +62,7 @@ describe('runJscodeshiftDeepcode', () => {
 		const oldData = `function mapStateToProps(state) {}`;
 
 		const fileCommands = runJscodeshiftDeepcode(
-			codemodSource,
+			deepcodeSource,
 			'/index.ts',
 			oldData,
 			true,

@@ -17,7 +17,7 @@ export const buildApi = (parser: string): API => ({
 });
 
 const transform = (
-	codemodSource: string,
+	deepcodeSource: string,
 	fileInfo: FileInfo,
 	api: API,
 	options: {
@@ -60,7 +60,7 @@ const transform = (
 		__DEEPCODE__api: api,
 		__DEEPCODE__options: options,
 		__DEEPCODE__console__: buildVmConsole(consoleCallback),
-		__CODEMOD_SOURCE__: codemodSource,
+		__CODEMOD_SOURCE__: deepcodeSource,
 	});
 
 	const value = vm.runInContext(codeToExecute, context);
@@ -69,7 +69,7 @@ const transform = (
 };
 
 export const runJscodeshiftDeepcode = (
-	codemodSource: string,
+	deepcodeSource: string,
 	oldPath: string,
 	oldData: string,
 	formatWithPrettier: boolean,
@@ -90,7 +90,7 @@ export const runJscodeshiftDeepcode = (
 	const api = buildApi('tsx');
 
 	const newData = transform(
-		codemodSource,
+		deepcodeSource,
 		{
 			path: oldPath,
 			source: oldData,
@@ -107,7 +107,7 @@ export const runJscodeshiftDeepcode = (
 		return commands;
 	}
 
-	// sometimes codemods produce newData even though they are literally no changes
+	// sometimes deepcodes produce newData even though they are literally no changes
 	// by removing parentheses around return statements, we will likely find the pointless results
 	try {
 		const oldRoot = api.jscodeshift(oldData);

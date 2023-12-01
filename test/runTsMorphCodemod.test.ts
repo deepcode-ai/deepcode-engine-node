@@ -3,7 +3,7 @@ import { transpile } from '../src/getTransformer.js';
 import { runTsMorphDeepcode } from '../src/runTsMorphDeepcode.js';
 import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 
-const codemodSource = transpile(`
+const deepcodeSource = transpile(`
 import { SourceFile, EmitHint } from 'ts-morph';
 
 export const handleSourceFile = (
@@ -24,7 +24,7 @@ describe('runTsMorphDeepcode', () => {
 		const messages: [ConsoleKind, string][] = [];
 
 		const fileCommands = runTsMorphDeepcode(
-			codemodSource,
+			deepcodeSource,
 			'index.ts',
 			``,
 			true,

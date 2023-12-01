@@ -3,7 +3,7 @@ import { argumentRecordSchema } from './argumentRecordSchema.js';
 
 const surfaceAgnosticCaseSchema = S.struct({
 	caseHashDigest: S.string,
-	codemodHashDigest: S.string,
+	deepcodeHashDigest: S.string,
 	createdAt: S.bigint,
 	absoluteTargetPath: S.string,
 	argumentRecord: argumentRecordSchema,

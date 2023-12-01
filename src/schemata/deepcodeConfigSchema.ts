@@ -20,7 +20,7 @@ const piranhaLanguageSchema = S.union(
 	...PIRANHA_LANGUAGES.map((language) => S.literal(language)),
 );
 
-export const codemodConfigSchema = S.union(
+export const deepcodeConfigSchema = S.union(
 	S.struct({
 		schemaVersion: S.literal('1.0.0'),
 		engine: S.literal('piranha'),

@@ -16,7 +16,7 @@ export const handleListNamesCommand = async (
 	const path = join(deepcodeDirectoryPath, 'names.json');
 
 	const buffer = await fileDownloadService.download(
-		'https://deepcode-public.s3.us-west-1.amazonaws.com/codemod-registry/names.json',
+		'https://deepcode-public.s3.us-west-1.amazonaws.com/deepcode-registry/names.json',
 		path,
 	);
 

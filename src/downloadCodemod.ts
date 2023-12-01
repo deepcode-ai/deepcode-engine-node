@@ -3,16 +3,16 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { PrinterBlueprint } from './printer.js';
-import { Deepcode } from './codemod.js';
+import { Deepcode } from './deepcode.js';
 
 import * as S from '@effect/schema/Schema';
 import Axios from 'axios';
-import { codemodConfigSchema } from './schemata/codemodConfigSchema.js';
+import { deepcodeConfigSchema } from './schemata/deepcodeConfigSchema.js';
 import { FileDownloadServiceBlueprint } from './fileDownloadService.js';
 import { TarService } from './services/tarService.js';
 
 const CODEMOD_REGISTRY_URL =
-	'https://deepcode-public.s3.us-west-1.amazonaws.com/codemod-registry';
+	'https://deepcode-public.s3.us-west-1.amazonaws.com/deepcode-registry';
 
 export type DeepcodeDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;
@@ -56,14 +56,14 @@ export class DeepcodeDownloader implements DeepcodeDownloaderBlueprint {
 	): Promise<Deepcode & { source: 'registry' }> {
 		this.__printer.printConsoleMessage(
 			'info',
-			`Downloading the "${name}" codemod, ${
+			`Downloading the "${name}" deepcode, ${
 				this._cacheUsed ? '' : 'not '
 			}using cache`,
 		);
 
 		await mkdir(this.__deepcodeDirectoryPath, { recursive: true });
 
-		// make the codemod directory
+		// make the deepcode directory
 		const hashDigest = createHash('ripemd160')
 			.update(name)
 			.digest('base64url');
@@ -82,7 +82,7 @@ export class DeepcodeDownloader implements DeepcodeDownloaderBlueprint {
 
 		const parsedConfig = JSON.parse(buffer.toString('utf8'));
 
-		const config = S.parseSync(codemodConfigSchema)(parsedConfig);
+		const config = S.parseSync(deepcodeConfigSchema)(parsedConfig);
 
 		{
 			const descriptionPath = join(directoryPath, 'description.md');
@@ -140,18 +140,18 @@ export class DeepcodeDownloader implements DeepcodeDownloaderBlueprint {
 		}
 
 		if (config.engine === 'recipe') {
-			const codemods: Deepcode[] = [];
+			const deepcodes: Deepcode[] = [];
 
 			for (const name of config.names) {
-				const codemod = await this.download(name);
-				codemods.push(codemod);
+				const deepcode = await this.download(name);
+				deepcodes.push(deepcode);
 			}
 
 			return {
 				source: 'registry',
 				name,
 				engine: config.engine,
-				codemods,
+				deepcodes,
 				directoryPath,
 				arguments: config.arguments,
 			};

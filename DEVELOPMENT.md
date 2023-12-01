@@ -20,4 +20,4 @@ Install the Deepcode Engine Node as the global executable sourced from the NPM R
 
 ## Execution
 
-    pnpx deepcode [framework/version/codemod-name]
+    pnpx deepcode [framework/version/deepcode-name]

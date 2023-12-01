@@ -3,10 +3,10 @@ import { APP_INSIGHTS_TAG } from './constants.js';
 
 export type Event =
 	| Readonly<{
-			kind: 'codemodExecuted';
+			kind: 'deepcodeExecuted';
 			fileCount: number;
 			executionId: string;
-			codemodName: string;
+			deepcodeName: string;
 	  }>
 	| Readonly<{
 			kind: 'failedToExecuteCommand';

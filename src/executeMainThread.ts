@@ -17,7 +17,7 @@ import { Runner } from './runner.js';
 import * as fs from 'fs';
 import { IFs } from 'memfs';
 import { loadRepositoryConfiguration } from './repositoryConfiguration.js';
-import { parseDeepcodeSettings } from './schemata/codemodSettingsSchema.js';
+import { parseDeepcodeSettings } from './schemata/deepcodeSettingsSchema.js';
 import { parseFlowSettings } from './schemata/flowSettingsSchema.js';
 import { runArgvSettingsSchema } from './schemata/runArgvSettingsSchema.js';
 import { buildArgumentRecord } from './buildArgumentRecord.js';
@@ -52,25 +52,25 @@ export const executeMainThread = async () => {
 
 	const argvObject = yargs(slicedArgv)
 		.scriptName('deepcode')
-		.command('*', 'runs a codemod or recipe', (y) => buildOptions(y))
+		.command('*', 'runs a deepcode or recipe', (y) => buildOptions(y))
 		.command(
 			'runOnPreCommit [files...]',
-			'run pre-commit codemods against staged files passed positionally',
+			'run pre-commit deepcodes against staged files passed positionally',
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
 		.command(
 			'list',
-			'lists all the codemods & recipes in the public registry',
+			'lists all the deepcodes & recipes in the public registry',
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
 		.command(
 			'syncRegistry',
-			'syncs all the codemods from the registry',
+			'syncs all the deepcodes from the registry',
 			(y) => buildUseJsonOption(y),
 		)
 		.command(
 			'learn',
-			'exports the current `git diff` in a file to before/after panels in codemod studio',
+			'exports the current `git diff` in a file to before/after panels in deepcode studio',
 			(y) =>
 				buildUseJsonOption(y).option('targetPath', {
 					type: 'string',
@@ -138,7 +138,7 @@ export const executeMainThread = async () => {
 	const tarService = new TarService(fs as unknown as IFs);
 
 	if (String(argv._) === 'syncRegistry') {
-		const codemodDownloader = new DeepcodeDownloader(
+		const deepcodeDownloader = new DeepcodeDownloader(
 			printer,
 			join(homedir(), '.deepcode'),
 			argv.useCache,
@@ -147,7 +147,7 @@ export const executeMainThread = async () => {
 		);
 
 		try {
-			await codemodDownloader.syncRegistry();
+			await deepcodeDownloader.syncRegistry();
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
@@ -187,7 +187,7 @@ export const executeMainThread = async () => {
 		'.deepcode',
 	);
 
-	const codemodSettings = parseDeepcodeSettings(argv);
+	const deepcodeSettings = parseDeepcodeSettings(argv);
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = S.parseSync(runArgvSettingsSchema)(argv);
 	const argumentRecord = buildArgumentRecord(argv);
@@ -196,7 +196,7 @@ export const executeMainThread = async () => {
 
 	const name = typeof lastArgument === 'string' ? lastArgument : null;
 
-	const codemodDownloader = new DeepcodeDownloader(
+	const deepcodeDownloader = new DeepcodeDownloader(
 		printer,
 		deepcodeDirectoryPath,
 		argv.useCache,
@@ -208,9 +208,9 @@ export const executeMainThread = async () => {
 		fs as unknown as IFs,
 		printer,
 		telemetryService,
-		codemodDownloader,
+		deepcodeDownloader,
 		loadRepositoryConfiguration,
-		codemodSettings,
+		deepcodeSettings,
 		flowSettings,
 		runSettings.dryRun,
 		argumentRecord,

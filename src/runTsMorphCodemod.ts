@@ -8,7 +8,7 @@ import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 import { buildVmConsole } from './buildVmConsole.js';
 
 const transform = (
-	codemodSource: string,
+	deepcodeSource: string,
 	oldPath: string,
 	oldData: string,
 	safeArgumentRecord: SafeArgumentRecord,
@@ -59,7 +59,7 @@ const transform = (
 		__DEEPCODE__oldData: oldData,
 		__DEEPCODE__argumentRecord: { ...safeArgumentRecord[0] },
 		__DEEPCODE__console__: buildVmConsole(consoleCallback),
-		__CODEMOD_SOURCE__: codemodSource,
+		__CODEMOD_SOURCE__: deepcodeSource,
 		require: (name: string) => {
 			if (name === 'ts-morph') {
 				return tsmorph;
@@ -73,7 +73,7 @@ const transform = (
 };
 
 export const runTsMorphDeepcode = (
-	codemodSource: string,
+	deepcodeSource: string,
 	oldPath: string,
 	oldData: string,
 	formatWithPrettier: boolean,
@@ -81,7 +81,7 @@ export const runTsMorphDeepcode = (
 	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
 	const newData = transform(
-		codemodSource,
+		deepcodeSource,
 		oldPath,
 		oldData,
 		safeArgumentRecord,

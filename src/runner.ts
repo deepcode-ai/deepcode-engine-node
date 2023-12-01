@@ -15,7 +15,7 @@ import { buildSafeArgumentRecord } from './safeArgumentRecord.js';
 import type { IFs } from 'memfs';
 import type { DeepcodeDownloaderBlueprint } from './downloadDeepcode.js';
 import type { RepositoryConfiguration } from './repositoryConfiguration.js';
-import type { DeepcodeSettings } from './schemata/codemodSettingsSchema.js';
+import type { DeepcodeSettings } from './schemata/deepcodeSettingsSchema.js';
 import type { FlowSettings } from './schemata/flowSettingsSchema.js';
 import type { TelemetryBlueprint } from './telemetryService.js';
 import { buildSourcedDeepcodeOptions } from './buildDeepcodeOptions.js';
@@ -30,9 +30,9 @@ export class Runner {
 		protected readonly _fs: IFs,
 		protected readonly _printer: PrinterBlueprint,
 		protected readonly _telemetry: TelemetryBlueprint,
-		protected readonly _codemodDownloader: DeepcodeDownloaderBlueprint,
+		protected readonly _deepcodeDownloader: DeepcodeDownloaderBlueprint,
 		protected readonly _loadRepositoryConfiguration: () => Promise<RepositoryConfiguration>,
-		protected readonly _codemodSettings: DeepcodeSettings,
+		protected readonly _deepcodeSettings: DeepcodeSettings,
 		protected readonly _flowSettings: FlowSettings,
 		protected readonly _dryRun: boolean,
 		protected readonly _argumentRecord: ArgumentRecord,
@@ -69,7 +69,7 @@ export class Runner {
 		);
 
 		try {
-			if (this._codemodSettings.kind === 'runSourced') {
+			if (this._deepcodeSettings.kind === 'runSourced') {
 				if (this._dryRun) {
 					this._printer.printConsoleMessage(
 						'log',
@@ -77,20 +77,20 @@ export class Runner {
 					);
 				}
 
-				const codemodOptions = await buildSourcedDeepcodeOptions(
+				const deepcodeOptions = await buildSourcedDeepcodeOptions(
 					this._fs,
-					this._codemodSettings,
+					this._deepcodeSettings,
 				);
 
 				const safeArgumentRecord = buildSafeArgumentRecord(
-					codemodOptions,
+					deepcodeOptions,
 					this._argumentRecord,
 				);
 
 				await runDeepcode(
 					this._fs,
 					this._printer,
-					codemodOptions,
+					deepcodeOptions,
 					this._flowSettings,
 					this.__runSettings,
 					(command) => this._handleCommand(command),
@@ -100,8 +100,8 @@ export class Runner {
 				);
 
 				this._telemetry.sendEvent({
-					kind: 'codemodExecuted',
-					codemodName: 'Deepcode from FS',
+					kind: 'deepcodeExecuted',
+					deepcodeName: 'Deepcode from FS',
 					executionId: this.__caseHashDigest.toString('base64url'),
 					fileCount: this.__modifiedFileCount,
 				});
@@ -116,26 +116,27 @@ export class Runner {
 				return;
 			}
 
-			if (this._codemodSettings.kind === 'runOnPreCommit') {
+			if (this._deepcodeSettings.kind === 'runOnPreCommit') {
 				const { preCommitDeepcodes } =
 					await this._loadRepositoryConfiguration();
 
 				for (const preCommitDeepcode of preCommitDeepcodes) {
 					if (preCommitDeepcode.source === 'registry') {
-						const codemod = await this._codemodDownloader.download(
-							preCommitDeepcode.name,
-							this._flowSettings.useCache,
-						);
+						const deepcode =
+							await this._deepcodeDownloader.download(
+								preCommitDeepcode.name,
+								this._flowSettings.useCache,
+							);
 
 						const safeArgumentRecord = buildSafeArgumentRecord(
-							codemod,
+							deepcode,
 							preCommitDeepcode.arguments,
 						);
 
 						await runDeepcode(
 							this._fs,
 							this._printer,
-							codemod,
+							deepcode,
 							this._flowSettings,
 							this.__runSettings,
 							(command) => this._handleCommand(command),
@@ -145,8 +146,8 @@ export class Runner {
 						);
 
 						this._telemetry.sendEvent({
-							kind: 'codemodExecuted',
-							codemodName: codemod.name,
+							kind: 'deepcodeExecuted',
+							deepcodeName: deepcode.name,
 							executionId:
 								this.__caseHashDigest.toString('base64url'),
 							fileCount: this.__modifiedFileCount,
@@ -160,7 +161,7 @@ export class Runner {
 			if (this._name !== null) {
 				this._printer.printConsoleMessage(
 					'info',
-					`Executing the "${this._name}" codemod against "${this._flowSettings.targetPath}"`,
+					`Executing the "${this._name}" deepcode against "${this._flowSettings.targetPath}"`,
 				);
 
 				if (this._dryRun) {
@@ -170,20 +171,20 @@ export class Runner {
 					);
 				}
 
-				const codemod = await this._codemodDownloader.download(
+				const deepcode = await this._deepcodeDownloader.download(
 					this._name,
 					this._flowSettings.useCache,
 				);
 
 				const safeArgumentRecord = buildSafeArgumentRecord(
-					codemod,
+					deepcode,
 					this._argumentRecord,
 				);
 
 				await runDeepcode(
 					this._fs,
 					this._printer,
-					codemod,
+					deepcode,
 					this._flowSettings,
 					this.__runSettings,
 					(command) => this._handleCommand(command),
@@ -193,8 +194,8 @@ export class Runner {
 				);
 
 				this._telemetry.sendEvent({
-					kind: 'codemodExecuted',
-					codemodName: codemod.name,
+					kind: 'deepcodeExecuted',
+					deepcodeName: deepcode.name,
 					executionId: this.__caseHashDigest.toString('base64url'),
 					fileCount: this.__modifiedFileCount,
 				});

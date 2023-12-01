@@ -1,7 +1,7 @@
 {
 	"name": "deepcode",
 	"version": "0.3.0",
-	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
+	"description": "A deepcode engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
 	"repository": {
@@ -9,7 +9,7 @@
 		"url": "https://github.com/deepcode-ai/deepcode-engine-node"
 	},
 	"keywords": [
-		"codemod",
+		"deepcode",
 		"jscodeshift",
 		"ts-morph",
 		"refactor",

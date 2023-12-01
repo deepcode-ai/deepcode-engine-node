@@ -2,5 +2,5 @@ build
 build-ncc
 node_modules
 pnpm-lock.yaml
-codemod-registry
+deepcode-registry
 dist

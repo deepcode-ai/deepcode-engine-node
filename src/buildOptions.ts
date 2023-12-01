@@ -56,17 +56,17 @@ export const buildOptions = <T extends {}>(y: Argv<T>) => {
 				})
 				.option('source', {
 					type: 'string',
-					description: 'Source path of the local codemod to run',
+					description: 'Source path of the local deepcode to run',
 				})
 				.option('sourcePath', {
 					type: 'string',
 					description:
-						'(DEPRECATED by "source") Source path of the local codemod to run',
+						'(DEPRECATED by "source") Source path of the local deepcode to run',
 				})
-				.option('codemodEngine', {
+				.option('deepcodeEngine', {
 					type: 'string',
 					description:
-						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
+						'The engine to use with the local deepcode: "jscodeshift", "ts-morph", "filemod"',
 				})
 				.option('fileLimit', {
 					type: 'number',

@@ -1,18 +1,18 @@
 import * as S from '@effect/schema/Schema';
 
-const codemodEngineSchema = S.union(
+const deepcodeEngineSchema = S.union(
 	S.literal('jscodeshift'),
 	S.literal('repomod-engine'),
 	S.literal('filemod'),
 	S.literal('ts-morph'),
 );
 
-export const codemodSettingsSchema = S.union(
+export const deepcodeSettingsSchema = S.union(
 	S.struct({
 		_: S.array(S.string),
 		source: S.optional(S.string),
 		sourcePath: S.optional(S.string),
-		codemodEngine: S.optional(codemodEngineSchema),
+		deepcodeEngine: S.optional(deepcodeEngineSchema),
 	}),
 );
 
@@ -27,30 +27,30 @@ export type DeepcodeSettings =
 	| Readonly<{
 			kind: 'runSourced';
 			sourcePath: string;
-			codemodEngine: S.To<typeof codemodEngineSchema> | null;
+			deepcodeEngine: S.To<typeof deepcodeEngineSchema> | null;
 	  }>;
 
 export const parseDeepcodeSettings = (input: unknown): DeepcodeSettings => {
-	const codemodSettings = S.parseSync(codemodSettingsSchema)(input);
+	const deepcodeSettings = S.parseSync(deepcodeSettingsSchema)(input);
 
-	if (codemodSettings._.includes('runOnPreCommit')) {
+	if (deepcodeSettings._.includes('runOnPreCommit')) {
 		return {
 			kind: 'runOnPreCommit',
 		};
 	}
 
-	const codemodName = codemodSettings._.at(-1);
-	if (codemodName) {
+	const deepcodeName = deepcodeSettings._.at(-1);
+	if (deepcodeName) {
 		return {
 			kind: 'runNamed',
-			name: codemodName,
+			name: deepcodeName,
 		};
 	}
 
 	const sourcePath =
-		'source' in codemodSettings
-			? codemodSettings.source
-			: codemodSettings.sourcePath;
+		'source' in deepcodeSettings
+			? deepcodeSettings.source
+			: deepcodeSettings.sourcePath;
 
 	if (!sourcePath) {
 		throw new Error('sourcePath is not present');
@@ -59,6 +59,6 @@ export const parseDeepcodeSettings = (input: unknown): DeepcodeSettings => {
 	return {
 		kind: 'runSourced',
 		sourcePath,
-		codemodEngine: codemodSettings.codemodEngine ?? null,
+		deepcodeEngine: deepcodeSettings.deepcodeEngine ?? null,
 	};
 };

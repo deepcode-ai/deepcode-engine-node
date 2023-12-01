@@ -5,8 +5,8 @@ import {
 	Deepcode,
 	JavaScriptDeepcodeEngine,
 	javaScriptDeepcodeEngineSchema,
-} from './codemod.js';
-import { DeepcodeSettings } from './schemata/codemodSettingsSchema.js';
+} from './deepcode.js';
+import { DeepcodeSettings } from './schemata/deepcodeSettingsSchema.js';
 
 const extractMainScriptRelativePath = async (
 	fs: IFs,
@@ -52,62 +52,62 @@ const extractEngine = async (
 
 export const buildSourcedDeepcodeOptions = async (
 	fs: IFs,
-	codemodOptions: DeepcodeSettings & { kind: 'runSourced' },
+	deepcodeOptions: DeepcodeSettings & { kind: 'runSourced' },
 ): Promise<Deepcode & { source: 'fileSystem' }> => {
 	const isDirectorySource = await fs.promises
-		.lstat(codemodOptions.sourcePath)
+		.lstat(deepcodeOptions.sourcePath)
 		.then((pathStat) => pathStat.isDirectory());
 
 	if (!isDirectorySource) {
-		if (codemodOptions.codemodEngine === null) {
+		if (deepcodeOptions.deepcodeEngine === null) {
 			throw new Error(
-				'--codemodEngine has to be defined when running local codemod',
+				'--deepcodeEngine has to be defined when running local deepcode',
 			);
 		}
 
 		return {
 			source: 'fileSystem' as const,
-			engine: codemodOptions.codemodEngine,
-			indexPath: codemodOptions.sourcePath,
+			engine: deepcodeOptions.deepcodeEngine,
+			indexPath: deepcodeOptions.sourcePath,
 		};
 	}
 
 	if (
 		!['config.json', 'package.json']
 			.map((lookedupFilePath) =>
-				path.join(codemodOptions.sourcePath, lookedupFilePath),
+				path.join(deepcodeOptions.sourcePath, lookedupFilePath),
 			)
 			.every(fs.existsSync)
 	) {
 		throw new Error(
-			`Deepcode directory is of incorrect structure at ${codemodOptions.sourcePath}`,
+			`Deepcode directory is of incorrect structure at ${deepcodeOptions.sourcePath}`,
 		);
 	}
 
 	const mainScriptRelativePath = await extractMainScriptRelativePath(
 		fs,
-		path.join(codemodOptions.sourcePath, 'package.json'),
+		path.join(deepcodeOptions.sourcePath, 'package.json'),
 	);
 
 	if (!mainScriptRelativePath) {
 		throw new Error(
-			`No main script specified for codemod at ${codemodOptions.sourcePath}`,
+			`No main script specified for deepcode at ${deepcodeOptions.sourcePath}`,
 		);
 	}
 
 	const mainScriptPath = path.join(
-		codemodOptions.sourcePath,
+		deepcodeOptions.sourcePath,
 		mainScriptRelativePath,
 	);
 
 	const engine = await extractEngine(
 		fs,
-		path.join(codemodOptions.sourcePath, 'config.json'),
+		path.join(deepcodeOptions.sourcePath, 'config.json'),
 	);
 
 	if (engine === null) {
 		throw new Error(
-			`Engine specified in config.json at ${codemodOptions.sourcePath} is not a JavaScript codemod engine or does not exist.`,
+			`Engine specified in config.json at ${deepcodeOptions.sourcePath} is not a JavaScript deepcode engine or does not exist.`,
 		);
 	}
 

@@ -9,7 +9,7 @@ import { escape, glob, Glob } from 'glob';
 import { dirname } from 'node:path';
 import { Filemod } from '@intuita-inc/filemod';
 import { PrinterBlueprint } from './printer.js';
-import { Deepcode } from './codemod.js';
+import { Deepcode } from './deepcode.js';
 import { IFs, Volume, createFsFromVolume } from 'memfs';
 import { createHash } from 'node:crypto';
 import { WorkerThreadManager } from './workerThreadManager.js';
@@ -26,13 +26,14 @@ const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 const buildPaths = async (
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	codemod: Deepcode,
+	deepcode: Deepcode,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): Promise<ReadonlyArray<string>> => {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
 
 	if (
-		(codemod.engine === 'repomod-engine' || codemod.engine === 'filemod') &&
+		(deepcode.engine === 'repomod-engine' ||
+			deepcode.engine === 'filemod') &&
 		filemod !== null
 	) {
 		const filemodPaths = await glob(
@@ -77,7 +78,7 @@ const buildPaths = async (
 async function* buildPathGenerator(
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	codemod: Deepcode,
+	deepcode: Deepcode,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): AsyncGenerator<string, void, unknown> {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
@@ -115,8 +116,8 @@ async function* buildPathGenerator(
 		const path = typeof value === 'string' ? value : value.fullpath();
 
 		if (
-			(codemod.engine === 'repomod-engine' ||
-				codemod.engine === 'filemod') &&
+			(deepcode.engine === 'repomod-engine' ||
+				deepcode.engine === 'filemod') &&
 			filemod !== null
 		) {
 			// what about this one?
@@ -146,7 +147,7 @@ async function* buildPathGenerator(
 export const runDeepcode = async (
 	fileSystem: IFs,
 	printer: PrinterBlueprint,
-	codemod: Deepcode,
+	deepcode: Deepcode,
 	flowSettings: FlowSettings,
 	runSettings: RunSettings,
 	onCommand: (command: FormattedFileCommand) => Promise<void>,
@@ -156,20 +157,20 @@ export const runDeepcode = async (
 	safeArgumentRecord: SafeArgumentRecord,
 	currentWorkingDirectory: string,
 ): Promise<void> => {
-	const name = 'name' in codemod ? codemod.name : codemod.indexPath;
+	const name = 'name' in deepcode ? deepcode.name : deepcode.indexPath;
 
 	printer.printConsoleMessage(
 		'info',
-		`Running the "${name}" codemod using "${codemod.engine}"`,
+		`Running the "${name}" deepcode using "${deepcode.engine}"`,
 	);
 
-	if (codemod.engine === 'piranha') {
+	if (deepcode.engine === 'piranha') {
 		throw new Error('Piranha not supported');
 	}
 
-	if (codemod.engine === 'recipe') {
+	if (deepcode.engine === 'recipe') {
 		if (!runSettings.dryRun) {
-			for (const subDeepcode of codemod.codemods) {
+			for (const subDeepcode of deepcode.deepcodes) {
 				const commands: FormattedFileCommand[] = [];
 
 				await runDeepcode(
@@ -185,7 +186,7 @@ export const runDeepcode = async (
 						if (message.kind === 'error') {
 							onPrinterMessage(message);
 						}
-						// we are discarding any printer messages from subcodemods
+						// we are discarding any printer messages from subdeepcodes
 						// if we are within a recipe
 					},
 					safeArgumentRecord,
@@ -208,7 +209,12 @@ export const runDeepcode = async (
 		const volume = Volume.fromJSON({});
 		const mfs = createFsFromVolume(volume);
 
-		const paths = await buildPaths(fileSystem, flowSettings, codemod, null);
+		const paths = await buildPaths(
+			fileSystem,
+			flowSettings,
+			deepcode,
+			null,
+		);
 
 		const fileMap = new Map<string, string>();
 
@@ -227,8 +233,8 @@ export const runDeepcode = async (
 			fileMap.set(path, dataHashDigest);
 		}
 
-		for (let i = 0; i < codemod.codemods.length; ++i) {
-			const subDeepcode = codemod.codemods[i];
+		for (let i = 0; i < deepcode.deepcodes.length; ++i) {
+			const subDeepcode = deepcode.deepcodes[i];
 
 			const commands: FormattedFileCommand[] = [];
 
@@ -256,11 +262,11 @@ export const runDeepcode = async (
 								message.processedFileNumber,
 							totalFileNumber:
 								message.totalFileNumber *
-								codemod.codemods.length,
+								deepcode.deepcodes.length,
 						});
 					}
 
-					// we are discarding any printer messages from subcodemods
+					// we are discarding any printer messages from subdeepcodes
 					// if we are within a recipe
 				},
 				safeArgumentRecord,
@@ -337,28 +343,28 @@ export const runDeepcode = async (
 		return;
 	}
 
-	const codemodSource = await fileSystem.promises.readFile(
-		codemod.indexPath,
+	const deepcodeSource = await fileSystem.promises.readFile(
+		deepcode.indexPath,
 		{ encoding: 'utf8' },
 	);
 
-	const transpiledSource = codemod.indexPath.endsWith('.ts')
-		? transpile(codemodSource.toString())
-		: codemodSource.toString();
+	const transpiledSource = deepcode.indexPath.endsWith('.ts')
+		? transpile(deepcodeSource.toString())
+		: deepcodeSource.toString();
 
 	const transformer = getTransformer(transpiledSource);
 
 	if (transformer === null) {
 		throw new Error(
-			`The transformer cannot be null: ${codemod.indexPath} ${codemod.engine}`,
+			`The transformer cannot be null: ${deepcode.indexPath} ${deepcode.engine}`,
 		);
 	}
 
-	if (codemod.engine === 'repomod-engine' || codemod.engine === 'filemod') {
+	if (deepcode.engine === 'repomod-engine' || deepcode.engine === 'filemod') {
 		const paths = await buildPaths(
 			fileSystem,
 			flowSettings,
-			codemod,
+			deepcode,
 			transformer as Filemod<Dependencies, Record<string, unknown>>,
 		);
 
@@ -385,18 +391,18 @@ export const runDeepcode = async (
 	const pathGenerator = buildPathGenerator(
 		fileSystem,
 		flowSettings,
-		codemod,
+		deepcode,
 		null,
 	);
 
-	const { engine } = codemod;
+	const { engine } = deepcode;
 
 	await new Promise<void>((resolve) => {
 		let timeout: NodeJS.Timeout | null = null;
 
 		const workerThreadManager = new WorkerThreadManager(
 			flowSettings.threadCount,
-			codemod.indexPath,
+			deepcode.indexPath,
 			engine,
 			transpiledSource,
 			flowSettings.usePrettier,

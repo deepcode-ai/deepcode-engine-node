@@ -4,7 +4,7 @@ import { PrinterBlueprint } from '../src/printer.js';
 import { DeepcodeDownloaderBlueprint } from '../src/downloadDeepcode.js';
 import { RepositoryConfiguration } from '../src/repositoryConfiguration.js';
 import { equal } from 'node:assert';
-import { DeepcodeSettings } from '../src/schemata/codemodSettingsSchema.js';
+import { DeepcodeSettings } from '../src/schemata/deepcodeSettingsSchema.js';
 import { FlowSettings } from '../src/schemata/flowSettingsSchema.js';
 
 const CODEMOD_D_INDEX_TS = `
@@ -23,14 +23,14 @@ export default function transform(file, api, options) {
 `;
 
 describe('Runner', function (this) {
-	it('should transform staged files using the pre-commit codemods', async () => {
+	it('should transform staged files using the pre-commit deepcodes', async () => {
 		const volume = Volume.fromJSON({
 			'/code/a.ts': 'unchanged',
 			'/code/b.ts': 'unchanged',
 			'/code/c.ts': 'unchanged',
 			'/code/e.ts': 'unchanged',
-			'/codemods/d/index.ts': CODEMOD_D_INDEX_TS,
-			'/codemods/e/index.ts': CODEMOD_E_INDEX_TS,
+			'/deepcodes/d/index.ts': CODEMOD_D_INDEX_TS,
+			'/deepcodes/e/index.ts': CODEMOD_E_INDEX_TS,
 		});
 
 		const ifs = createFsFromVolume(volume);
@@ -40,15 +40,15 @@ describe('Runner', function (this) {
 			printConsoleMessage: () => {},
 		};
 
-		const codemodDownloader: DeepcodeDownloaderBlueprint = {
+		const deepcodeDownloader: DeepcodeDownloaderBlueprint = {
 			syncRegistry: async () => {},
 			download: async (name: string) => {
 				return {
 					source: 'registry',
 					name,
 					engine: 'jscodeshift',
-					indexPath: `/codemods/${name}/index.ts`,
-					directoryPath: `/codemods/${name}`,
+					indexPath: `/deepcodes/${name}/index.ts`,
+					directoryPath: `/deepcodes/${name}`,
 					arguments: [
 						{
 							name: 'argA',
@@ -86,7 +86,7 @@ describe('Runner', function (this) {
 				],
 			});
 
-		const codemodSettings: DeepcodeSettings = {
+		const deepcodeSettings: DeepcodeSettings = {
 			kind: 'runOnPreCommit',
 		};
 
@@ -111,9 +111,9 @@ describe('Runner', function (this) {
 			{
 				sendEvent: () => {},
 			},
-			codemodDownloader,
+			deepcodeDownloader,
 			loadRepositoryConfiguration,
-			codemodSettings,
+			deepcodeSettings,
 			flowSettings,
 			false,
 			{},

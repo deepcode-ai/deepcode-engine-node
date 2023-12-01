@@ -69,7 +69,7 @@ export const writeSurfaceAgnosticCase = (
 
 			const innerBuffer = Buffer.concat([
 				Buffer.from(kase.caseHashDigest, 'base64url').subarray(0, 20),
-				Buffer.from(kase.codemodHashDigest, 'base64url').subarray(
+				Buffer.from(kase.deepcodeHashDigest, 'base64url').subarray(
 					0,
 					20,
 				),

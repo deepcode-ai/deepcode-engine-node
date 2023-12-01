@@ -70,7 +70,7 @@ const UrlParamKeys = {
 	Engine: 'engine' as const,
 	BeforeSnippet: 'beforeSnippet' as const,
 	AfterSnippet: 'afterSnippet' as const,
-	DeepcodeSource: 'codemodSource' as const,
+	DeepcodeSource: 'deepcodeSource' as const,
 	Command: 'command' as const,
 };
 
@@ -113,7 +113,7 @@ const createDeepcodeStudioURL = ({
 		const encodedBeforeSnippet = encode(beforeSnippet);
 		const encodedAfterSnippet = encode(afterSnippet);
 
-		const url = new URL('https://codemod.studio/');
+		const url = new URL('https://deepcode.studio/');
 		const searchParams = new URLSearchParams([
 			[UrlParamKeys.Engine, encodedEngine],
 			[UrlParamKeys.BeforeSnippet, encodedBeforeSnippet],

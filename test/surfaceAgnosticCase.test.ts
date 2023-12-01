@@ -42,11 +42,11 @@ const doWithinTemporaryDirectory = async <T>(
 };
 
 const caseHashDigest = randomBytes(20);
-const codemodHashDigest = randomBytes(20);
+const deepcodeHashDigest = randomBytes(20);
 
 const kase: SurfaceAgnosticCase = {
 	caseHashDigest: caseHashDigest.toString('base64url'),
-	codemodHashDigest: codemodHashDigest.toString('base64url'),
+	deepcodeHashDigest: deepcodeHashDigest.toString('base64url'),
 	createdAt: BigInt(Date.now()),
 	absoluteTargetPath: '/a/b/c',
 	argumentRecord: {

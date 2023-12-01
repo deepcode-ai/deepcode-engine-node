@@ -7,7 +7,7 @@ import {
 } from './workerThreadMessages.js';
 import { FormattedFileCommand } from './fileCommands.js';
 import { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { DeepcodeEngine } from './codemod.js';
+import { DeepcodeEngine } from './deepcode.js';
 
 const WORKER_THREAD_TIME_LIMIT = 10000;
 
@@ -24,12 +24,12 @@ export class WorkerThreadManager {
 
 	public constructor(
 		private readonly __workerCount: number,
-		private readonly __codemodPath: string,
-		private readonly __codemodEngine: Extract<
+		private readonly __deepcodePath: string,
+		private readonly __deepcodeEngine: Extract<
 			DeepcodeEngine,
 			'ts-morph' | 'jscodeshift'
 		>,
-		private readonly __codemodSource: string,
+		private readonly __deepcodeSource: string,
 		private readonly __formatWithPrettier: boolean,
 		private readonly __getData: (path: string) => Promise<string>,
 		private readonly __onPrinterMessage: (
@@ -156,9 +156,9 @@ export class WorkerThreadManager {
 			kind: 'runDeepcode',
 			path: filePath,
 			data,
-			codemodPath: this.__codemodPath,
-			codemodSource: this.__codemodSource,
-			codemodEngine: this.__codemodEngine,
+			deepcodePath: this.__deepcodePath,
+			deepcodeSource: this.__deepcodeSource,
+			deepcodeEngine: this.__deepcodeEngine,
 			formatWithPrettier: this.__formatWithPrettier,
 			safeArgumentRecord: this.__safeArgumentRecord,
 		} satisfies MainThreadMessage);

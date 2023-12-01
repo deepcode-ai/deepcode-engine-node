@@ -1,14 +1,14 @@
 import { ArgumentRecord } from './schemata/argumentRecordSchema.js';
-import { Deepcode } from './codemod.js';
+import { Deepcode } from './deepcode.js';
 
 export type SafeArgumentRecord = readonly [ArgumentRecord];
 
 export const buildSafeArgumentRecord = (
-	codemod: Deepcode,
+	deepcode: Deepcode,
 	argumentRecord: ArgumentRecord,
 ): SafeArgumentRecord => {
-	if (codemod.source === 'fileSystem') {
-		// no checks performed for local codemods
+	if (deepcode.source === 'fileSystem') {
+		// no checks performed for local deepcodes
 		// b/c no source of truth for the arguments
 		return [argumentRecord];
 	}
@@ -17,7 +17,7 @@ export const buildSafeArgumentRecord = (
 		{},
 	];
 
-	codemod.arguments.forEach((descriptor) => {
+	deepcode.arguments.forEach((descriptor) => {
 		const unsafeValue = argumentRecord[descriptor.name];
 
 		if (typeof unsafeValue === descriptor.kind) {

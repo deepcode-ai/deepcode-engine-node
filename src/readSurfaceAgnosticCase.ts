@@ -31,7 +31,7 @@ const buildCase = (outerCase: OuterCase): SurfaceAgnosticCase => {
 	const caseHashDigest = outerCase.innerData
 		.subarray(0, 20)
 		.toString('base64url');
-	const codemodHashDigest = outerCase.innerData
+	const deepcodeHashDigest = outerCase.innerData
 		.subarray(20, 40)
 		.toString('base64url');
 
@@ -60,7 +60,7 @@ const buildCase = (outerCase: OuterCase): SurfaceAgnosticCase => {
 
 	return {
 		caseHashDigest,
-		codemodHashDigest,
+		deepcodeHashDigest,
 		createdAt,
 		absoluteTargetPath,
 		argumentRecord,

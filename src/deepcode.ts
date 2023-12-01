@@ -19,7 +19,7 @@ export type Deepcode =
 			name: string;
 			engine: 'recipe';
 			directoryPath: string;
-			codemods: ReadonlyArray<Deepcode>;
+			deepcodes: ReadonlyArray<Deepcode>;
 			arguments: Arguments;
 	  }>
 	| Readonly<{
