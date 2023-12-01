@@ -16,7 +16,7 @@ export const codemodSettingsSchema = S.union(
 	}),
 );
 
-export type CodemodSettings =
+export type DeepcodeSettings =
 	| Readonly<{
 			kind: 'runOnPreCommit';
 	  }>
@@ -30,7 +30,7 @@ export type CodemodSettings =
 			codemodEngine: S.To<typeof codemodEngineSchema> | null;
 	  }>;
 
-export const parseCodemodSettings = (input: unknown): CodemodSettings => {
+export const parseDeepcodeSettings = (input: unknown): DeepcodeSettings => {
 	const codemodSettings = S.parseSync(codemodSettingsSchema)(input);
 
 	if (codemodSettings._.includes('runOnPreCommit')) {

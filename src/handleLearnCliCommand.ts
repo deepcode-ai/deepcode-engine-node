@@ -70,7 +70,7 @@ const UrlParamKeys = {
 	Engine: 'engine' as const,
 	BeforeSnippet: 'beforeSnippet' as const,
 	AfterSnippet: 'afterSnippet' as const,
-	CodemodSource: 'codemodSource' as const,
+	DeepcodeSource: 'codemodSource' as const,
 	Command: 'command' as const,
 };
 
@@ -99,7 +99,7 @@ const openURL = (url: string): boolean => {
 	}
 };
 
-const createCodemodStudioURL = ({
+const createDeepcodeStudioURL = ({
 	engine,
 	beforeSnippet,
 	afterSnippet,
@@ -285,7 +285,7 @@ export const handleLearnCliCommand = async (
 		.join('')
 		// remove all occurrences of `\n` at the beginning
 		.replace(/^\n+/, '');
-	const url = createCodemodStudioURL({
+	const url = createDeepcodeStudioURL({
 		// TODO: Support other engines in the future
 		engine: 'jscodeshift',
 		beforeSnippet,
@@ -302,14 +302,14 @@ export const handleLearnCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		'Learning went successful! Opening Codemod Studio...',
+		'Learning went successful! Opening Deepcode Studio...',
 	);
 
 	const success = openURL(url);
 	if (!success) {
 		printer.printOperationMessage({
 			kind: 'error',
-			message: 'Unexpected error occurred while opening Codemod Studio.',
+			message: 'Unexpected error occurred while opening Deepcode Studio.',
 		});
 		return;
 	}

@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'node:assert';
 import { transpile } from '../src/getTransformer.js';
-import { runJscodeshiftCodemod } from '../src/runJscodeshiftCodemod.js';
+import { runJscodeshiftDeepcode } from '../src/runJscodeshiftDeepcode.js';
 import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 
 const codemodSource = transpile(`
@@ -55,13 +55,13 @@ export default function transform(
 }
 `);
 
-describe('runJscodeshiftCodemod', () => {
+describe('runJscodeshiftDeepcode', () => {
 	it('should return transformed output', () => {
 		const messages: [ConsoleKind, string][] = [];
 
 		const oldData = `function mapStateToProps(state) {}`;
 
-		const fileCommands = runJscodeshiftCodemod(
+		const fileCommands = runJscodeshiftDeepcode(
 			codemodSource,
 			'/index.ts',
 			oldData,

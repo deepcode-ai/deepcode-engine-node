@@ -9,7 +9,7 @@ import { escape, glob, Glob } from 'glob';
 import { dirname } from 'node:path';
 import { Filemod } from '@intuita-inc/filemod';
 import { PrinterBlueprint } from './printer.js';
-import { Codemod } from './codemod.js';
+import { Deepcode } from './codemod.js';
 import { IFs, Volume, createFsFromVolume } from 'memfs';
 import { createHash } from 'node:crypto';
 import { WorkerThreadManager } from './workerThreadManager.js';
@@ -26,7 +26,7 @@ const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 const buildPaths = async (
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	codemod: Codemod,
+	codemod: Deepcode,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): Promise<ReadonlyArray<string>> => {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
@@ -77,7 +77,7 @@ const buildPaths = async (
 async function* buildPathGenerator(
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	codemod: Codemod,
+	codemod: Deepcode,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): AsyncGenerator<string, void, unknown> {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
@@ -143,10 +143,10 @@ async function* buildPathGenerator(
 	controller.abort();
 }
 
-export const runCodemod = async (
+export const runDeepcode = async (
 	fileSystem: IFs,
 	printer: PrinterBlueprint,
-	codemod: Codemod,
+	codemod: Deepcode,
 	flowSettings: FlowSettings,
 	runSettings: RunSettings,
 	onCommand: (command: FormattedFileCommand) => Promise<void>,
@@ -169,13 +169,13 @@ export const runCodemod = async (
 
 	if (codemod.engine === 'recipe') {
 		if (!runSettings.dryRun) {
-			for (const subCodemod of codemod.codemods) {
+			for (const subDeepcode of codemod.codemods) {
 				const commands: FormattedFileCommand[] = [];
 
-				await runCodemod(
+				await runDeepcode(
 					fileSystem,
 					printer,
-					subCodemod,
+					subDeepcode,
 					flowSettings,
 					runSettings,
 					async (command) => {
@@ -228,14 +228,14 @@ export const runCodemod = async (
 		}
 
 		for (let i = 0; i < codemod.codemods.length; ++i) {
-			const subCodemod = codemod.codemods[i];
+			const subDeepcode = codemod.codemods[i];
 
 			const commands: FormattedFileCommand[] = [];
 
-			await runCodemod(
+			await runDeepcode(
 				mfs,
 				printer,
-				subCodemod,
+				subDeepcode,
 				flowSettings,
 				{
 					dryRun: false,

@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'node:assert';
 import { transpile } from '../src/getTransformer.js';
-import { runTsMorphCodemod } from '../src/runTsMorphCodemod.js';
+import { runTsMorphDeepcode } from '../src/runTsMorphDeepcode.js';
 import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 
 const codemodSource = transpile(`
@@ -19,11 +19,11 @@ export const handleSourceFile = (
 };
 `);
 
-describe('runTsMorphCodemod', () => {
+describe('runTsMorphDeepcode', () => {
 	it('should return transformed output', () => {
 		const messages: [ConsoleKind, string][] = [];
 
-		const fileCommands = runTsMorphCodemod(
+		const fileCommands = runTsMorphDeepcode(
 			codemodSource,
 			'index.ts',
 			``,

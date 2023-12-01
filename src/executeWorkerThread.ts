@@ -1,8 +1,8 @@
 import { parentPort } from 'node:worker_threads';
 import { WorkerThreadMessage } from './workerThreadMessages.js';
 import { decodeMainThreadMessage } from './mainThreadMessages.js';
-import { runJscodeshiftCodemod } from './runJscodeshiftCodemod.js';
-import { runTsMorphCodemod } from './runTsMorphCodemod.js';
+import { runJscodeshiftDeepcode } from './runJscodeshiftDeepcode.js';
+import { runTsMorphDeepcode } from './runTsMorphDeepcode.js';
 
 import { buildFormattedFileCommands } from './fileCommands.js';
 import { ConsoleKind } from './schemata/consoleKindSchema.js';
@@ -33,7 +33,7 @@ const messageHandler = async (m: unknown) => {
 		try {
 			const fileCommands =
 				message.codemodEngine === 'jscodeshift'
-					? runJscodeshiftCodemod(
+					? runJscodeshiftDeepcode(
 							message.codemodSource,
 							message.path,
 							message.data,
@@ -41,7 +41,7 @@ const messageHandler = async (m: unknown) => {
 							message.safeArgumentRecord,
 							consoleCallback,
 					  )
-					: runTsMorphCodemod(
+					: runTsMorphDeepcode(
 							message.codemodSource,
 							message.path,
 							message.data,

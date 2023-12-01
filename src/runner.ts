@@ -9,16 +9,16 @@ import {
 	buildPrinterMessageUponCommand,
 } from './fileCommands.js';
 import type { PrinterBlueprint } from './printer.js';
-import { runCodemod } from './runCodemod.js';
+import { runDeepcode } from './runDeepcode.js';
 
 import { buildSafeArgumentRecord } from './safeArgumentRecord.js';
 import type { IFs } from 'memfs';
-import type { CodemodDownloaderBlueprint } from './downloadCodemod.js';
+import type { DeepcodeDownloaderBlueprint } from './downloadDeepcode.js';
 import type { RepositoryConfiguration } from './repositoryConfiguration.js';
-import type { CodemodSettings } from './schemata/codemodSettingsSchema.js';
+import type { DeepcodeSettings } from './schemata/codemodSettingsSchema.js';
 import type { FlowSettings } from './schemata/flowSettingsSchema.js';
 import type { TelemetryBlueprint } from './telemetryService.js';
-import { buildSourcedCodemodOptions } from './buildCodemodOptions.js';
+import { buildSourcedDeepcodeOptions } from './buildDeepcodeOptions.js';
 import { RunSettings } from './runSettings.js';
 
 export class Runner {
@@ -30,9 +30,9 @@ export class Runner {
 		protected readonly _fs: IFs,
 		protected readonly _printer: PrinterBlueprint,
 		protected readonly _telemetry: TelemetryBlueprint,
-		protected readonly _codemodDownloader: CodemodDownloaderBlueprint,
+		protected readonly _codemodDownloader: DeepcodeDownloaderBlueprint,
 		protected readonly _loadRepositoryConfiguration: () => Promise<RepositoryConfiguration>,
-		protected readonly _codemodSettings: CodemodSettings,
+		protected readonly _codemodSettings: DeepcodeSettings,
 		protected readonly _flowSettings: FlowSettings,
 		protected readonly _dryRun: boolean,
 		protected readonly _argumentRecord: ArgumentRecord,
@@ -77,7 +77,7 @@ export class Runner {
 					);
 				}
 
-				const codemodOptions = await buildSourcedCodemodOptions(
+				const codemodOptions = await buildSourcedDeepcodeOptions(
 					this._fs,
 					this._codemodSettings,
 				);
@@ -87,7 +87,7 @@ export class Runner {
 					this._argumentRecord,
 				);
 
-				await runCodemod(
+				await runDeepcode(
 					this._fs,
 					this._printer,
 					codemodOptions,
@@ -101,7 +101,7 @@ export class Runner {
 
 				this._telemetry.sendEvent({
 					kind: 'codemodExecuted',
-					codemodName: 'Codemod from FS',
+					codemodName: 'Deepcode from FS',
 					executionId: this.__caseHashDigest.toString('base64url'),
 					fileCount: this.__modifiedFileCount,
 				});
@@ -117,22 +117,22 @@ export class Runner {
 			}
 
 			if (this._codemodSettings.kind === 'runOnPreCommit') {
-				const { preCommitCodemods } =
+				const { preCommitDeepcodes } =
 					await this._loadRepositoryConfiguration();
 
-				for (const preCommitCodemod of preCommitCodemods) {
-					if (preCommitCodemod.source === 'registry') {
+				for (const preCommitDeepcode of preCommitDeepcodes) {
+					if (preCommitDeepcode.source === 'registry') {
 						const codemod = await this._codemodDownloader.download(
-							preCommitCodemod.name,
+							preCommitDeepcode.name,
 							this._flowSettings.useCache,
 						);
 
 						const safeArgumentRecord = buildSafeArgumentRecord(
 							codemod,
-							preCommitCodemod.arguments,
+							preCommitDeepcode.arguments,
 						);
 
-						await runCodemod(
+						await runDeepcode(
 							this._fs,
 							this._printer,
 							codemod,
@@ -180,7 +180,7 @@ export class Runner {
 					this._argumentRecord,
 				);
 
-				await runCodemod(
+				await runDeepcode(
 					this._fs,
 					this._printer,
 					codemod,
@@ -217,7 +217,7 @@ export class Runner {
 			});
 			this._telemetry.sendEvent({
 				kind: 'failedToExecuteCommand',
-				commandName: 'deepcode.executeCodemod',
+				commandName: 'deepcode.executeDeepcode',
 			});
 		}
 	}

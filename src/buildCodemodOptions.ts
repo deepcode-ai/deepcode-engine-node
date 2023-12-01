@@ -2,11 +2,11 @@ import { IFs } from 'memfs';
 import * as S from '@effect/schema/Schema';
 import path from 'node:path';
 import {
-	Codemod,
-	JavaScriptCodemodEngine,
-	javaScriptCodemodEngineSchema,
+	Deepcode,
+	JavaScriptDeepcodeEngine,
+	javaScriptDeepcodeEngineSchema,
 } from './codemod.js';
-import { CodemodSettings } from './schemata/codemodSettingsSchema.js';
+import { DeepcodeSettings } from './schemata/codemodSettingsSchema.js';
 
 const extractMainScriptRelativePath = async (
 	fs: IFs,
@@ -32,14 +32,14 @@ const extractMainScriptRelativePath = async (
 const extractEngine = async (
 	fs: IFs,
 	filePath: string,
-): Promise<JavaScriptCodemodEngine | null> => {
+): Promise<JavaScriptDeepcodeEngine | null> => {
 	try {
 		const data = await fs.promises.readFile(filePath, {
 			encoding: 'utf-8',
 		});
 
 		const schema = S.struct({
-			engine: javaScriptCodemodEngineSchema,
+			engine: javaScriptDeepcodeEngineSchema,
 		});
 
 		const { engine } = S.parseSync(schema)(data);
@@ -50,10 +50,10 @@ const extractEngine = async (
 	}
 };
 
-export const buildSourcedCodemodOptions = async (
+export const buildSourcedDeepcodeOptions = async (
 	fs: IFs,
-	codemodOptions: CodemodSettings & { kind: 'runSourced' },
-): Promise<Codemod & { source: 'fileSystem' }> => {
+	codemodOptions: DeepcodeSettings & { kind: 'runSourced' },
+): Promise<Deepcode & { source: 'fileSystem' }> => {
 	const isDirectorySource = await fs.promises
 		.lstat(codemodOptions.sourcePath)
 		.then((pathStat) => pathStat.isDirectory());
@@ -80,7 +80,7 @@ export const buildSourcedCodemodOptions = async (
 			.every(fs.existsSync)
 	) {
 		throw new Error(
-			`Codemod directory is of incorrect structure at ${codemodOptions.sourcePath}`,
+			`Deepcode directory is of incorrect structure at ${codemodOptions.sourcePath}`,
 		);
 	}
 

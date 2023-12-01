@@ -3,7 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import * as S from '@effect/schema/Schema';
 import { handleListNamesCommand } from './handleListCliCommand.js';
-import { CodemodDownloader } from './downloadCodemod.js';
+import { DeepcodeDownloader } from './downloadDeepcode.js';
 import { Printer } from './printer.js';
 import { handleLearnCliCommand } from './handleLearnCliCommand.js';
 import { join } from 'node:path';
@@ -17,7 +17,7 @@ import { Runner } from './runner.js';
 import * as fs from 'fs';
 import { IFs } from 'memfs';
 import { loadRepositoryConfiguration } from './repositoryConfiguration.js';
-import { parseCodemodSettings } from './schemata/codemodSettingsSchema.js';
+import { parseDeepcodeSettings } from './schemata/codemodSettingsSchema.js';
 import { parseFlowSettings } from './schemata/flowSettingsSchema.js';
 import { runArgvSettingsSchema } from './schemata/runArgvSettingsSchema.js';
 import { buildArgumentRecord } from './buildArgumentRecord.js';
@@ -138,7 +138,7 @@ export const executeMainThread = async () => {
 	const tarService = new TarService(fs as unknown as IFs);
 
 	if (String(argv._) === 'syncRegistry') {
-		const codemodDownloader = new CodemodDownloader(
+		const codemodDownloader = new DeepcodeDownloader(
 			printer,
 			join(homedir(), '.deepcode'),
 			argv.useCache,
@@ -187,7 +187,7 @@ export const executeMainThread = async () => {
 		'.deepcode',
 	);
 
-	const codemodSettings = parseCodemodSettings(argv);
+	const codemodSettings = parseDeepcodeSettings(argv);
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = S.parseSync(runArgvSettingsSchema)(argv);
 	const argumentRecord = buildArgumentRecord(argv);
@@ -196,7 +196,7 @@ export const executeMainThread = async () => {
 
 	const name = typeof lastArgument === 'string' ? lastArgument : null;
 
-	const codemodDownloader = new CodemodDownloader(
+	const codemodDownloader = new DeepcodeDownloader(
 		printer,
 		deepcodeDirectoryPath,
 		argv.useCache,

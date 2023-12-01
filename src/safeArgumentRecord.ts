@@ -1,10 +1,10 @@
 import { ArgumentRecord } from './schemata/argumentRecordSchema.js';
-import { Codemod } from './codemod.js';
+import { Deepcode } from './codemod.js';
 
 export type SafeArgumentRecord = readonly [ArgumentRecord];
 
 export const buildSafeArgumentRecord = (
-	codemod: Codemod,
+	codemod: Deepcode,
 	argumentRecord: ArgumentRecord,
 ): SafeArgumentRecord => {
 	if (codemod.source === 'fileSystem') {

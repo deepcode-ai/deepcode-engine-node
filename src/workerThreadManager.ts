@@ -7,7 +7,7 @@ import {
 } from './workerThreadMessages.js';
 import { FormattedFileCommand } from './fileCommands.js';
 import { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { CodemodEngine } from './codemod.js';
+import { DeepcodeEngine } from './codemod.js';
 
 const WORKER_THREAD_TIME_LIMIT = 10000;
 
@@ -26,7 +26,7 @@ export class WorkerThreadManager {
 		private readonly __workerCount: number,
 		private readonly __codemodPath: string,
 		private readonly __codemodEngine: Extract<
-			CodemodEngine,
+			DeepcodeEngine,
 			'ts-morph' | 'jscodeshift'
 		>,
 		private readonly __codemodSource: string,
@@ -153,7 +153,7 @@ export class WorkerThreadManager {
 		const data = await this.__getData(filePath);
 
 		this.__workers[id]?.postMessage({
-			kind: 'runCodemod',
+			kind: 'runDeepcode',
 			path: filePath,
 			data,
 			codemodPath: this.__codemodPath,

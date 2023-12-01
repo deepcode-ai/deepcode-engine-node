@@ -6,7 +6,7 @@ const mainThreadMessageSchema = S.union(
 		kind: S.literal('exit'),
 	}),
 	S.struct({
-		kind: S.literal('runCodemod'),
+		kind: S.literal('runDeepcode'),
 		codemodPath: S.string,
 		codemodSource: S.string,
 		codemodEngine: S.union(

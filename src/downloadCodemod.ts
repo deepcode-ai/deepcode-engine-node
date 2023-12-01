@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { PrinterBlueprint } from './printer.js';
-import { Codemod } from './codemod.js';
+import { Deepcode } from './codemod.js';
 
 import * as S from '@effect/schema/Schema';
 import Axios from 'axios';
@@ -14,15 +14,15 @@ import { TarService } from './services/tarService.js';
 const CODEMOD_REGISTRY_URL =
 	'https://deepcode-public.s3.us-west-1.amazonaws.com/codemod-registry';
 
-export type CodemodDownloaderBlueprint = Readonly<{
+export type DeepcodeDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;
 	download(
 		name: string,
 		cache: boolean,
-	): Promise<Codemod & { source: 'registry' }>;
+	): Promise<Deepcode & { source: 'registry' }>;
 }>;
 
-export class CodemodDownloader implements CodemodDownloaderBlueprint {
+export class DeepcodeDownloader implements DeepcodeDownloaderBlueprint {
 	public constructor(
 		private readonly __printer: PrinterBlueprint,
 		private readonly __deepcodeDirectoryPath: string,
@@ -34,7 +34,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public async syncRegistry() {
 		this.__printer.printConsoleMessage(
 			'info',
-			`Syncing the Codemod Registry into ${this.__deepcodeDirectoryPath}`,
+			`Syncing the Deepcode Registry into ${this.__deepcodeDirectoryPath}`,
 		);
 
 		await mkdir(this.__deepcodeDirectoryPath, { recursive: true });
@@ -53,7 +53,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async download(
 		name: string,
-	): Promise<Codemod & { source: 'registry' }> {
+	): Promise<Deepcode & { source: 'registry' }> {
 		this.__printer.printConsoleMessage(
 			'info',
 			`Downloading the "${name}" codemod, ${
@@ -140,7 +140,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		}
 
 		if (config.engine === 'recipe') {
-			const codemods: Codemod[] = [];
+			const codemods: Deepcode[] = [];
 
 			for (const name of config.names) {
 				const codemod = await this.download(name);

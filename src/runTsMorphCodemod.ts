@@ -72,7 +72,7 @@ const transform = (
 	return S.parseSync(S.union(S.string, S.undefined, S.null))(value);
 };
 
-export const runTsMorphCodemod = (
+export const runTsMorphDeepcode = (
 	codemodSource: string,
 	oldPath: string,
 	oldData: string,

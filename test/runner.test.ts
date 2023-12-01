@@ -1,10 +1,10 @@
 import { Volume, createFsFromVolume } from 'memfs';
 import { Runner } from '../src/runner.js';
 import { PrinterBlueprint } from '../src/printer.js';
-import { CodemodDownloaderBlueprint } from '../src/downloadCodemod.js';
+import { DeepcodeDownloaderBlueprint } from '../src/downloadDeepcode.js';
 import { RepositoryConfiguration } from '../src/repositoryConfiguration.js';
 import { equal } from 'node:assert';
-import { CodemodSettings } from '../src/schemata/codemodSettingsSchema.js';
+import { DeepcodeSettings } from '../src/schemata/codemodSettingsSchema.js';
 import { FlowSettings } from '../src/schemata/flowSettingsSchema.js';
 
 const CODEMOD_D_INDEX_TS = `
@@ -40,7 +40,7 @@ describe('Runner', function (this) {
 			printConsoleMessage: () => {},
 		};
 
-		const codemodDownloader: CodemodDownloaderBlueprint = {
+		const codemodDownloader: DeepcodeDownloaderBlueprint = {
 			syncRegistry: async () => {},
 			download: async (name: string) => {
 				return {
@@ -66,7 +66,7 @@ describe('Runner', function (this) {
 		const loadRepositoryConfiguration = () =>
 			Promise.resolve<RepositoryConfiguration>({
 				schemaVersion: '1.0.0',
-				preCommitCodemods: [
+				preCommitDeepcodes: [
 					{
 						source: 'registry',
 						name: 'd',
@@ -86,7 +86,7 @@ describe('Runner', function (this) {
 				],
 			});
 
-		const codemodSettings: CodemodSettings = {
+		const codemodSettings: DeepcodeSettings = {
 			kind: 'runOnPreCommit',
 		};
 

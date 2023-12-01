@@ -2,30 +2,30 @@ import { Arguments } from './schemata/argumentsSchema.js';
 
 import * as S from '@effect/schema/Schema';
 
-export const javaScriptCodemodEngineSchema = S.union(
+export const javaScriptDeepcodeEngineSchema = S.union(
 	S.literal('jscodeshift'),
 	S.literal('repomod-engine'),
 	S.literal('filemod'),
 	S.literal('ts-morph'),
 );
 
-export type JavaScriptCodemodEngine = S.To<
-	typeof javaScriptCodemodEngineSchema
+export type JavaScriptDeepcodeEngine = S.To<
+	typeof javaScriptDeepcodeEngineSchema
 >;
 
-export type Codemod =
+export type Deepcode =
 	| Readonly<{
 			source: 'registry';
 			name: string;
 			engine: 'recipe';
 			directoryPath: string;
-			codemods: ReadonlyArray<Codemod>;
+			codemods: ReadonlyArray<Deepcode>;
 			arguments: Arguments;
 	  }>
 	| Readonly<{
 			source: 'registry';
 			name: string;
-			engine: JavaScriptCodemodEngine;
+			engine: JavaScriptDeepcodeEngine;
 			directoryPath: string;
 			indexPath: string;
 			arguments: Arguments;
@@ -39,6 +39,6 @@ export type Codemod =
 	  }>
 	| Readonly<{
 			source: 'fileSystem';
-			engine: JavaScriptCodemodEngine;
+			engine: JavaScriptDeepcodeEngine;
 			indexPath: string;
 	  }>;

@@ -68,7 +68,7 @@ const transform = (
 	return S.parseSync(S.union(S.string, S.undefined, S.null))(value);
 };
 
-export const runJscodeshiftCodemod = (
+export const runJscodeshiftDeepcode = (
 	codemodSource: string,
 	oldPath: string,
 	oldData: string,

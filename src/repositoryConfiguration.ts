@@ -2,7 +2,7 @@ import { cosmiconfig } from 'cosmiconfig';
 import * as S from '@effect/schema/Schema';
 import { argumentRecordSchema } from './schemata/argumentRecordSchema.js';
 
-const preCommitCodemodSchema = S.union(
+const preCommitDeepcodeSchema = S.union(
 	S.struct({
 		source: S.literal('fileSystem'),
 		path: S.string,
@@ -17,9 +17,9 @@ const preCommitCodemodSchema = S.union(
 
 const repositoryConfigurationSchema = S.struct({
 	schemaVersion: S.optional(S.literal('1.0.0')).withDefault(() => '1.0.0'),
-	preCommitCodemods: S.optional(S.array(preCommitCodemodSchema)).withDefault(
-		() => [],
-	),
+	preCommitDeepcodes: S.optional(
+		S.array(preCommitDeepcodeSchema),
+	).withDefault(() => []),
 });
 
 export type RepositoryConfiguration = S.To<
@@ -34,7 +34,7 @@ export const parseRepositoryConfiguration = (
 	} catch (error) {
 		return {
 			schemaVersion: '1.0.0',
-			preCommitCodemods: [],
+			preCommitDeepcodes: [],
 		};
 	}
 };
