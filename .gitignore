@@ -1,0 +1,7 @@
+build
+build-ncc
+node_modules
+.vscode
+dist
+.turbo
+package
